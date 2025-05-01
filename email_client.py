@@ -29,7 +29,7 @@ def get_access_token():
 
 def fetch_unread_emails(access_token):
     # url = f"https://graph.microsoft.com/v1.0/users/{user_email}/mailFolders/Inbox/messages?$filter=isRead eq false&$top=10&$select=subject,body,bodyPreview,from"
-    url = f"https://graph.microsoft.com/v1.0/users/{user_email}/mailFolders/JunkEmail/messages?$filter=isRead eq false&$top=50&$select=subject,body,bodyPreview,from"
+    url = f"https://graph.microsoft.com/v1.0/users/{user_email}/mailFolders/JunkEmail/messages?$filter=isRead eq false&$top=200&$select=subject,body,bodyPreview,from"
 
     headers = {
         "Authorization": f"Bearer {access_token}",
@@ -39,9 +39,7 @@ def fetch_unread_emails(access_token):
     if response.status_code != 200:
         raise RuntimeError("Failed to fetch emails: " + response.text)
     return response.json().get("value", [])
-
-
-def reply_to_email(access_token, message_id, reply_body):
+def reply_to_email(access_token, message_id, html_reply_body):
     user_email = os.getenv("USER_EMAIL")
     headers = {
         "Authorization": f"Bearer {access_token}",
@@ -56,13 +54,20 @@ def reply_to_email(access_token, message_id, reply_body):
     draft = create_resp.json()
     draft_id = draft["id"]
 
-    # Step 2: Get original draft body (which includes quoted message)
+    # Step 2: Get original draft body (includes quoted thread)
     original_body = draft.get("body", {}).get("content", "")
-    
-    # Step 3: Add reply above quoted content
-    full_body = f"{reply_body}\n\n{original_body}"
 
-    # Step 4: Update draft with combined content
+    # Step 3: Combine your HTML with original email content
+    full_body = f"""
+    <div style="font-family:Arial, sans-serif; font-size:14px;">
+        {html_reply_body}
+        <br><br>
+        <hr>
+        {original_body}
+    </div>
+    """
+
+    # Step 4: Update the reply draft with HTML content
     update_url = f"https://graph.microsoft.com/v1.0/users/{user_email}/messages/{draft_id}"
     patch_body = {
         "body": {
@@ -74,7 +79,7 @@ def reply_to_email(access_token, message_id, reply_body):
     if update_resp.status_code != 200:
         raise RuntimeError(f"❌ Failed to update reply draft: {update_resp.text}")
 
-    # Step 5: Send the reply
+    # Step 5: Send the email
     send_url = f"https://graph.microsoft.com/v1.0/users/{user_email}/messages/{draft_id}/send"
     send_resp = requests.post(send_url, headers=headers)
     if send_resp.status_code != 202:

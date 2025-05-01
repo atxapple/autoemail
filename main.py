@@ -31,12 +31,13 @@ for email in emails:
     print(result)
     print("=" * 60)
 
-    # Assuming categorization result contains a "meeting_request" field
     if '"meeting_request": "Yes"' in result:
-        reply_text = f"Indeed, I am interested in a meeting. Can you please arrange a meeting through my DonaTalk page? \n https://app.donatalk.com/listener/W4onxwz4OOUymoNbhGW9i6trAe83 \n I found that a small commitment makes meetings more meaningful. \n Thanks. \n\n  \n -Mok-"
-        reply_to_email(access_token, email["id"], reply_text)
-
-
-
-
-
+        reply_html = """
+            <p>Indeed, I am interested in a meeting.</p>
+            <p></p>
+            <p>Can you please arrange a time through my DonaTalk page? <a href="https://app.donatalk.com/listener/d3HETYjCxXRuLH9eklNNYMl284M2" target="_blank"> https://app.donatalk.com/listener/d3HETYjCxXRuLH9eklNNYMl284M2 </a></p>
+            <p>I’ve found that a small commitment makes meetings more meaningful.</p>
+            <p>Thanks.</p>
+            <p>-Mok-</p>
+        """
+        reply_to_email(access_token, email["id"], reply_html)
