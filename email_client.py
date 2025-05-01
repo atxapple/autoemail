@@ -86,3 +86,14 @@ def reply_to_email(access_token, message_id, html_reply_body):
         raise RuntimeError(f"❌ Failed to send reply: {send_resp.text}")
 
     print(f"📤 Replied to message {message_id}")
+
+    # Step 6: Mark the original message as read
+    mark_read_url = f"https://graph.microsoft.com/v1.0/users/{user_email}/messages/{message_id}"
+    mark_read_body = {
+        "isRead": True
+    }
+    mark_resp = requests.patch(mark_read_url, headers=headers, json=mark_read_body)
+    if mark_resp.status_code != 200:
+        raise RuntimeError(f"❌ Failed to mark email as read: {mark_resp.text}")
+
+    print(f"📩 Marked message {message_id} as read.")
