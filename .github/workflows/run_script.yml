@@ -2,8 +2,8 @@ name: Run Email Script Weekdays
 
 on:
   schedule:
-    - cron: '0 8 * * 1-5'   # 8:00 AM UTC, Mon–Fri
-  workflow_dispatch:        # (optional) manual trigger
+    - cron: '*/1 * * * *'   # every minute
+  workflow_dispatch:
 
 jobs:
   run-email-script:
