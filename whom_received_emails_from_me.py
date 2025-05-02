@@ -11,6 +11,7 @@ client_id = os.getenv("CLIENT_ID")
 client_secret = os.getenv("CLIENT_SECRET")
 tenant_id = os.getenv("TENANT_ID")
 user_email = os.getenv("USER_EMAIL")
+exclusion_emails = os.getenv("SENT_RECIPIENTS_EMAIL_LISTS")
 authority = f"https://login.microsoftonline.com/{tenant_id}"
 scope = ["https://graph.microsoft.com/.default"]
 
@@ -34,7 +35,7 @@ print("📤 Fetching sent emails...")
 # Request sent emails
 url = (
     f"https://graph.microsoft.com/v1.0/users/{user_email}/mailFolders/SentItems/messages"
-    f"?$top=20000&$select=toRecipients,ccRecipients,bccRecipients"
+    f"?$top=100&$select=toRecipients,ccRecipients,bccRecipients"
 )
 
 headers = {
@@ -62,15 +63,22 @@ for msg in sent_emails:
     bcc = extract_addresses(msg.get("bccRecipients"))
     all_recipients.update(to + cc + bcc)
 
-# Output
-print(f"\n✅ Found {len(all_recipients)} unique recipient(s):\n")
-for email in sorted(all_recipients):
-    print(f"📧 {email}")
+print(f"\n📥 Found {len(all_recipients)} total unique recipient(s).")
 
+# Load existing emails
+sent_file = exclusion_emails
+if os.path.exists(sent_file):
+    with open(sent_file, "r", encoding="utf-8") as f:
+        existing_recipients = set(line.strip().lower() for line in f if line.strip())
+else:
+    existing_recipients = set()
 
-output_path = "sent_recipients.txt"
-with open(output_path, "w", encoding="utf-8") as f:
-    for email in sorted(all_recipients):
+# Identify new recipients
+new_recipients = sorted(email for email in all_recipients if email.lower() not in existing_recipients)
+
+# Append only new recipients
+with open(sent_file, "a", encoding="utf-8") as f:
+    for email in new_recipients:
         f.write(email + "\n")
 
-print(f"\n📁 Saved {len(all_recipients)} unique email(s) to: {output_path}")
+print(f"🆕 Added {len(new_recipients)} new email(s) to '{sent_file}'.")

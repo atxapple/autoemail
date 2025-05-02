@@ -20,7 +20,7 @@ Read the email below and return a JSON with:
 Example JSON output: {{"meeting_request": "Yes", "sender_email": "john.doe@example.com", "summary": "Meeting request: Project kickoff"}}
 
 Email Subject: {subject}
-Email Body: {body[:3000]}
+Email Body: {body[:5000]}
 """
 
     response = client.chat.completions.create(

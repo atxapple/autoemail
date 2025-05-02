@@ -27,9 +27,7 @@ def get_access_token():
         raise RuntimeError("Failed to acquire token: " + result.get("error_description", ""))
     return result["access_token"]
 
-def fetch_unread_emails(access_token):
-    # url = f"https://graph.microsoft.com/v1.0/users/{user_email}/mailFolders/Inbox/messages?$filter=isRead eq false&$top=10&$select=subject,body,bodyPreview,from"
-    url = f"https://graph.microsoft.com/v1.0/users/{user_email}/mailFolders/JunkEmail/messages?$filter=isRead eq false&$top=200&$select=subject,body,bodyPreview,from"
+def fetch_unread_emails(access_token, url):
 
     headers = {
         "Authorization": f"Bearer {access_token}",
