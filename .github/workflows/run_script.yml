@@ -1,34 +1,34 @@
-name: Run Email Script Weekdays
+# name: Run Email Script Weekdays
 
-on:
-  schedule:
-    - cron: '*/1 * * * *'   # every minute
-  workflow_dispatch:
+# on:
+#   schedule:
+#     - cron: '*/1 * * * *'   # every minute
+#   workflow_dispatch:
 
-jobs:
-  run-email-script:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+# jobs:
+#   run-email-script:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+#       - name: Set up Python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+#       - name: Install dependencies
+#         run: |
+#           pip install -r requirements.txt
 
-      - name: Run script
-        env:
-          CLIENT_ID: ${{ secrets.CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-          TENANT_ID: ${{ secrets.TENANT_ID }}
-          USER_EMAIL: ${{ secrets.USER_EMAIL }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          SENT_RECIPIENTS_EMAIL_LISTS : ${{ secrets.SENT_RECIPIENTS_EMAIL_LISTS }}
+#       - name: Run script
+#         env:
+#           CLIENT_ID: ${{ secrets.CLIENT_ID }}
+#           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+#           TENANT_ID: ${{ secrets.TENANT_ID }}
+#           USER_EMAIL: ${{ secrets.USER_EMAIL }}
+#           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+#           SENT_RECIPIENTS_EMAIL_LISTS : ${{ secrets.SENT_RECIPIENTS_EMAIL_LISTS }}
 
-        run: |
-          python whom_received_emails_from_me.py
+#         run: |
+#           python whom_received_emails_from_me.py
